@@ -43,7 +43,10 @@ class DummyVecEnv(VecEnv):
             obs, self.buf_rews[env_idx], self.buf_dones[env_idx], self.buf_infos[env_idx] = self.envs[env_idx].step(
                 self.actions[env_idx]
             )
-            if self.buf_dones[env_idx]:
+            # timelimit_reached in info is set if in a non-episodic env the agent is told to reset the env to learn
+            # initial behavior
+            # Refere to Issue:
+            if self.buf_dones[env_idx] or self.buf_infos[env_idx].get("timelimit_reached", False):
                 # save final observation where user can get it, then reset
                 self.buf_infos[env_idx]["terminal_observation"] = obs
                 obs = self.envs[env_idx].reset()
