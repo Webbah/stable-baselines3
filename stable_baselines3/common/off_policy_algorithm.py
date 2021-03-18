@@ -398,7 +398,7 @@ class OffPolicyAlgorithm(BaseAlgorithm):
 
         # As the VecEnv resets automatically, new_obs is already the
         # first observation of the next episode
-        if done and infos[0].get("terminal_observation") is not None:
+        if (done or infos[0].get("timelimit_reached", False)) and infos[0].get("terminal_observation") is not None:
             next_obs = infos[0]["terminal_observation"]
             # VecNormalize normalizes the terminal observation
             if self._vec_normalize_env is not None:
