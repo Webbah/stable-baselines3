@@ -458,8 +458,9 @@ class OffPolicyAlgorithm(BaseAlgorithm):
         while should_collect_more_steps(train_freq, num_collected_steps, num_collected_episodes):
             done = False
             episode_reward, episode_timesteps = 0.0, 0
+            infos = [dict(timelimit_reached=False)]
 
-            while not done:
+            while not done and not infos[0].get("timelimit_reached", False):
 
                 if self.use_sde and self.sde_sample_freq > 0 and num_collected_steps % self.sde_sample_freq == 0:
                     # Sample a new noise matrix
@@ -500,7 +501,7 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                 if not should_collect_more_steps(train_freq, num_collected_steps, num_collected_episodes):
                     break
 
-            if done:
+            if done or infos[0].get("timelimit_reached", False):
                 num_collected_episodes += 1
                 self._episode_num += 1
                 episode_rewards.append(episode_reward)
